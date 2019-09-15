@@ -1187,6 +1187,10 @@ function initWebhookSettings() {
     });
 }
 
+function initSigninSettings()
+{
+}
+
 $(document).ready(function () {
     csrf = $('meta[name=_csrf]').attr("content");
     suburl = $('meta[name=_suburl]').attr("content");
@@ -1442,7 +1446,8 @@ $(document).ready(function () {
     var routes = {
         'div.user.settings': initUserSettings,
         'div.repository.settings.collaboration': initRepositoryCollaboration,
-        'div.webhook.settings': initWebhookSettings
+        'div.webhook.settings': initWebhookSettings,
+		'div.user.signin': initSigninSettings
     };
 
     var selector;

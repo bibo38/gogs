@@ -7,6 +7,7 @@
 				{{template "base/alert" .}}
 				<h4 class="ui top attached header">
 					{{.i18n.Tr "settings.two_factor"}}
+					<a class="ui right mini green toggle button" href="{{AppSubURL}}/user/settings/security/two_factor_create">{{.i18n.Tr "settings.two_factor_enable"}}</a>
 				</h4>
 				<div class="ui attached segment two-factor">
 					<p class="text bold">
@@ -16,7 +17,7 @@
 							<button class="ui right mini red toggle button delete-button" data-url="{{$.Link}}/two_factor_disable">{{.i18n.Tr "settings.two_factor_disable"}}</button>
 						{{else}}
 							<span class="text red">{{.i18n.Tr "settings.two_factor_off"}} <i class="octicon octicon-x"></i></span>
-							<a class="ui right mini green toggle button" href="{{AppSubURL}}/user/settings/security/two_factor_enable">{{.i18n.Tr "settings.two_factor_enable"}}</a>
+
 						{{end}}
 					</p>
 					<p class="text bold">
@@ -24,6 +25,15 @@
 						<span class="text red">Off  <i class="octicon octicon-x"></i></span>
 						<a class="ui right mini green toggle button" id="registerWebAuthn">Enable</a>
 					</p>
+					<div class="item">
+						Security Token
+					</div>
+					<div class="item">
+						Windows Hello/TPM
+					</div>
+					<div class="item">
+						<a href="{{AppSubURL}}/user/settings/security/two_factor_recovery_codes">Recovery Codes</a>
+					</div>
 				</div>
 				{{if .TwoFactor}}
 					<br>

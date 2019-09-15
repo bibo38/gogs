@@ -1,0 +1,28 @@
+{{template "base/head" .}}
+<div class="user settings security two-factor">
+	<div class="ui container">
+		<div class="ui grid">
+			{{template "user/settings/navbar" .}}
+			<div class="twelve wide column content">
+				{{template "base/alert" .}}
+				<h4 class="ui top attached header">
+					Add a second factor
+				</h4>
+				<div class="ui attached segment">
+					<div class="ui list">
+            <div class="item">
+              TTOP / Google Authenticator
+            </div>
+            <div class="item">
+              Security Key
+            </div>
+            <div class="item">
+              Windows Hello / TPM
+            </div>
+          </div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{{template "base/footer" .}}

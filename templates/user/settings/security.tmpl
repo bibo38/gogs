@@ -19,6 +19,11 @@
 							<a class="ui right mini green toggle button" href="{{AppSubURL}}/user/settings/security/two_factor_enable">{{.i18n.Tr "settings.two_factor_enable"}}</a>
 						{{end}}
 					</p>
+					<p class="text bold">
+						Web Authentication:
+						<span class="text red">Off  <i class="octicon octicon-x"></i></span>
+						<a class="ui right mini green toggle button" id="registerWebAuthn">Enable</a>
+					</p>
 				</div>
 				{{if .TwoFactor}}
 					<br>

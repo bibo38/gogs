@@ -1088,6 +1088,35 @@ function initCodeView() {
     }
 }
 
+async function registerWebAuthn() {
+    // TODO Check if WebAuthn is available
+
+    let key = await navigator.credentials.create({
+        publicKey: {
+            rp: {
+                // TODO Get the hostname + id
+                id: 'localhost',
+                name: 'Gogs'
+            },
+            user: {
+                // Get the avatar + displayname
+                displayName: 'TODO',
+                id: new Uint8Array(26),
+                name: 'todo@gogs.com'
+            },
+            challenge: new Uint8Array(26),
+            pubKeyCredParams: [
+                {
+                    type: 'public-key',
+                    alg: -7
+                }
+            ]
+        }
+    })
+
+    await navigator.credentials.get({ publicKey: { challenge: new Uint8Array(26), rpId: "localhost", allowCredentials: [{ type: 'public-key', id: key.rawId }] }});
+}
+
 function initUserSettings() {
     console.log('initUserSettings');
 
@@ -1101,6 +1130,11 @@ function initUserSettings() {
                 $prompt.hide();
             }
         });
+    }
+
+    // Two Factor authentication
+    if ($('.user.settings.security').length > 0) {
+        $('#registerWebAuthn').click(registerWebAuthn);
     }
 }
 

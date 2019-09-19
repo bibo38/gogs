@@ -14,6 +14,10 @@ import (
 
 	"github.com/gogs/gogs/cmd"
 	"github.com/gogs/gogs/pkg/setting"
+
+	// TODO find better place
+	"encoding/gob"
+	"github.com/duo-labs/webauthn/webauthn"
 )
 
 const Version = "0.11.91.0811"
@@ -23,6 +27,8 @@ func init() {
 }
 
 func main() {
+	gob.Register(webauthn.SessionData {})
+
 	app := cli.NewApp()
 	app.Name = "Gogs"
 	app.Usage = "A painless self-hosted Git service"

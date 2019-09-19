@@ -1090,8 +1090,15 @@ function initCodeView() {
 
 function registerWebAuthn() {
 	// Base64 to ArrayBuffer
-	function bufferDecode(value) {
-		return Uint8Array.from(atob(value), c => c.charCodeAt(0));
+	function decodeBuffer(value) {
+		return Uint8Array.from(atob(value), c => c.charCodeAt(0))
+	}
+
+	// On this side, we need to encode to Base64url for the library
+	function encodeBuffer(value) {
+		var base64 = btoa(new Uint8Array(value).reduce((s, byte) => s + String.fromCharCode(byte), ''))
+		var base64url = base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g,  '')
+		return base64url
 	}
 
     // TODO Check if WebAuthn is availabl
@@ -1099,11 +1106,31 @@ function registerWebAuthn() {
 		.then(resp => resp.json())
 		.then(resp => {
 			// Decode the necessary JSON fields to ArrayBuffers
-			[resp.publicKey.user, ...(resp.publicKey.excludeCredentials || [])]
-				.forEach(obj => obj.id = bufferDecode(obj.id))
-			resp.publicKey.challenge = bufferDecode(resp.publicKey.challenge)
+			resp.publicKey.user.id = decodeBuffer(resp.publicKey.user.id)
+			;(resp.publicKey.excludeCredentials || [])
+				.forEach(cred => cred.id = decodeBuffer(cred.id))
+			resp.publicKey.challenge = decodeBuffer(resp.publicKey.challenge)
 
 			return navigator.credentials.create(resp)
+		})
+		.then(credentials => {
+			let postCreds = {
+				type: credentials.type,
+				id: credentials.id,
+				rawId: credentials.id, // as id should already represent the base64url encoded value of rawId
+				response: {
+					clientDataJSON: encodeBuffer(credentials.response.clientDataJSON),
+					attestationObject: encodeBuffer(credentials.response.attestationObject)
+				}
+			}
+
+			return fetch('security/two_factor_create', {
+				method: 'POST',
+				body: JSON.stringify(postCreds),
+				headers: {
+					'X-Csrf-Token': csrf
+				}
+			})
 		})
 }
 

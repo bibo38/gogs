@@ -411,6 +411,8 @@ func (user *perfectUser) WebAuthnCredentials() []webauthn.Credential {
 	return []webauthn.Credential{}
 }
 
+var myuser perfectUser = perfectUser{}
+
 func SettingsTwoFactorCreate(c *context.Context) {
 
 	// TODO Testing route
@@ -424,12 +426,30 @@ func SettingsTwoFactorCreate(c *context.Context) {
 		return
 	}
 
-	myuser := perfectUser{}
 	// No attestation (identification of used key type) necessary, but we cannot set it in the webauthn.Config, as this value is not considered
-	options, _, _ := authn.BeginRegistration(&myuser, webauthn.WithConveyancePreference(protocol.PreferNoAttestation))
+	options, sessionData, _ := authn.BeginRegistration(&myuser, webauthn.WithConveyancePreference(protocol.PreferNoAttestation))
 
+	c.Session.Set("webauthn", *sessionData)
 	c.JSONSuccess(options)
 	// c.Success(SETTINGS_TWO_FACTOR_CREATE)
+}
+
+func SettingsTwoFactorCreatePost(c *context.Context) {
+	authn, _ := webauthn.New(&webauthn.Config {
+		RPDisplayName: "Gogs",
+		RPID: "localhost",
+		RPOrigin: "http://localhost",
+	})
+
+	sessionData := c.Session.Get("webauthn").(webauthn.SessionData)
+	_, err := authn.FinishRegistration(&myuser, sessionData, c.Context.Req.Request)
+
+	if(err != nil) {
+		c.ServerError("GetTwoFactorByUserID", err)
+		return
+	}
+
+	c.NotFound()
 }
 
 func SettingsTwoFactorEnable(c *context.Context) {

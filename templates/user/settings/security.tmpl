@@ -10,29 +10,39 @@
 					<a class="ui right mini green toggle button" href="{{AppSubURL}}/user/settings/security/two_factor_create">{{.i18n.Tr "settings.two_factor_enable"}}</a>
 				</h4>
 				<div class="ui attached segment two-factor">
-					<p class="text bold">
-						{{.i18n.Tr "settings.two_factor_status"}}
-						{{if .TwoFactor}}
-							<span class="text green">{{.i18n.Tr "settings.two_factor_on"}} <i class="octicon octicon-check"></i></span>
-							<button class="ui right mini red toggle button delete-button" data-url="{{$.Link}}/two_factor_disable">{{.i18n.Tr "settings.two_factor_disable"}}</button>
-						{{else}}
-							<span class="text red">{{.i18n.Tr "settings.two_factor_off"}} <i class="octicon octicon-x"></i></span>
+					<div class="ui key list">
+						<div class="ui item grid">
+							<p class="text bold">
+								{{.i18n.Tr "settings.two_factor_status"}}
+								{{if .TwoFactor}}
+									<span class="text green">{{.i18n.Tr "settings.two_factor_on"}} <i class="octicon octicon-check"></i></span>
+									<button class="ui right mini red toggle button delete-button" data-url="{{$.Link}}/two_factor_disable">{{.i18n.Tr "settings.two_factor_disable"}}</button>
+								{{else}}
+									<span class="text red">{{.i18n.Tr "settings.two_factor_off"}} <i class="octicon octicon-x"></i></span>
 
-						{{end}}
-					</p>
-					<p class="text bold">
-						Web Authentication:
-						<span class="text red">Off  <i class="octicon octicon-x"></i></span>
-						<a class="ui right mini green toggle button" id="registerWebAuthn">Enable</a>
-					</p>
-					<div class="item">
-						Security Token
-					</div>
-					<div class="item">
-						Windows Hello/TPM
-					</div>
-					<div class="item">
-						<a href="{{AppSubURL}}/user/settings/security/two_factor_recovery_codes">Recovery Codes</a>
+								{{end}}
+							</p>
+							<p class="text bold">
+								Web Authentication:
+								<span class="text red">Off  <i class="octicon octicon-x"></i></span>
+								<a class="ui right mini green toggle button" id="registerWebAuthn">Enable</a>
+							</p>
+						</div>
+						<div class="ui item grid">
+							<div class="ten wide column">
+								Security Token
+							</div>
+						</div>
+						<div class="ui item grid">
+							<div class="ten wide column">
+								Windows Hello/TPM
+							</div>
+						</div>
+						<div class="ui item grid">
+							<div class="ten wide column">
+								<a href="{{AppSubURL}}/user/settings/security/two_factor_recovery_codes">Recovery Codes</a>
+							</div>
+						</div>
 					</div>
 				</div>
 				{{if .TwoFactor}}

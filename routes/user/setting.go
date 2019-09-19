@@ -34,6 +34,7 @@ const (
 	SETTINGS_EMAILS                    = "user/settings/email"
 	SETTINGS_SSH_KEYS                  = "user/settings/sshkeys"
 	SETTINGS_SECURITY                  = "user/settings/security"
+	SETTINGS_TWO_FACTOR_CREATE         = "user/settings/two_factor_create"
 	SETTINGS_TWO_FACTOR_ENABLE         = "user/settings/two_factor_enable"
 	SETTINGS_TWO_FACTOR_RECOVERY_CODES = "user/settings/two_factor_recovery_codes"
 	SETTINGS_REPOSITORIES              = "user/settings/repositories"
@@ -384,6 +385,10 @@ func SettingsSecurity(c *context.Context) {
 	c.Data["TwoFactor"] = t
 
 	c.Success(SETTINGS_SECURITY)
+}
+
+func SettingsTwoFactorCreate(c *context.Context) {
+	c.Success(SETTINGS_TWO_FACTOR_CREATE)
 }
 
 func SettingsTwoFactorEnable(c *context.Context) {

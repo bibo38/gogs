@@ -1088,33 +1088,23 @@ function initCodeView() {
     }
 }
 
-async function registerWebAuthn() {
-    // TODO Check if WebAuthn is available
+function registerWebAuthn() {
+	// Base64 to ArrayBuffer
+	function bufferDecode(value) {
+		return Uint8Array.from(atob(value), c => c.charCodeAt(0));
+	}
 
-    let key = await navigator.credentials.create({
-        publicKey: {
-            rp: {
-                // TODO Get the hostname + id
-                id: 'localhost',
-                name: 'Gogs'
-            },
-            user: {
-                // Get the avatar + displayname
-                displayName: 'TODO',
-                id: new Uint8Array(26),
-                name: 'todo@gogs.com'
-            },
-            challenge: new Uint8Array(26),
-            pubKeyCredParams: [
-                {
-                    type: 'public-key',
-                    alg: -7
-                }
-            ]
-        }
-    })
+    // TODO Check if WebAuthn is availabl
+	fetch('security/two_factor_create')
+		.then(resp => resp.json())
+		.then(resp => {
+			// Decode the necessary JSON fields to ArrayBuffers
+			[resp.publicKey.user, ...(resp.publicKey.excludeCredentials || [])]
+				.forEach(obj => obj.id = bufferDecode(obj.id))
+			resp.publicKey.challenge = bufferDecode(resp.publicKey.challenge)
 
-    await navigator.credentials.get({ publicKey: { challenge: new Uint8Array(26), rpId: "localhost", allowCredentials: [{ type: 'public-key', id: key.rawId }] }});
+			return navigator.credentials.create(resp)
+		})
 }
 
 function initUserSettings() {

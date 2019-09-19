@@ -17,6 +17,8 @@ import (
 	"github.com/pquerna/otp"
 	"github.com/pquerna/otp/totp"
 	log "gopkg.in/clog.v1"
+	"github.com/duo-labs/webauthn/webauthn"
+	"github.com/duo-labs/webauthn/protocol"
 
 	"github.com/gogs/gogs/models"
 	"github.com/gogs/gogs/models/errors"
@@ -387,8 +389,47 @@ func SettingsSecurity(c *context.Context) {
 	c.Success(SETTINGS_SECURITY)
 }
 
+type perfectUser struct {}
+
+func (user *perfectUser) WebAuthnID() []byte {
+	return []byte { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 }
+}
+
+func (user *perfectUser) WebAuthnName() string {
+	return "newUser"
+}
+
+func (user *perfectUser) WebAuthnDisplayName() string {
+	return "New User"
+}
+
+func (user *perfectUser) WebAuthnIcon() string {
+	return "https://pics.com/avatar.png"
+}
+
+func (user *perfectUser) WebAuthnCredentials() []webauthn.Credential {
+	return []webauthn.Credential{}
+}
+
 func SettingsTwoFactorCreate(c *context.Context) {
-	c.Success(SETTINGS_TWO_FACTOR_CREATE)
+
+	// TODO Testing route
+	authn, err := webauthn.New(&webauthn.Config {
+		RPDisplayName: "Gogs",
+		RPID: "localhost",
+		RPOrigin: "http://localhost",
+	})
+	if err != nil {
+		c.ServerError("GetTwoFactorByUserID", err)
+		return
+	}
+
+	myuser := perfectUser{}
+	// No attestation (identification of used key type) necessary, but we cannot set it in the webauthn.Config, as this value is not considered
+	options, _, _ := authn.BeginRegistration(&myuser, webauthn.WithConveyancePreference(protocol.PreferNoAttestation))
+
+	c.JSONSuccess(options)
+	// c.Success(SETTINGS_TWO_FACTOR_CREATE)
 }
 
 func SettingsTwoFactorEnable(c *context.Context) {

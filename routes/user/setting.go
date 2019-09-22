@@ -389,7 +389,9 @@ func SettingsSecurity(c *context.Context) {
 	c.Success(SETTINGS_SECURITY)
 }
 
-type perfectUser struct {}
+type perfectUser struct {
+	UserID int64
+}
 
 func (user *perfectUser) WebAuthnID() []byte {
 	return []byte { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 }
@@ -408,10 +410,9 @@ func (user *perfectUser) WebAuthnIcon() string {
 }
 
 func (user *perfectUser) WebAuthnCredentials() []webauthn.Credential {
-	return []webauthn.Credential{}
+	fmt.Printf("CREDENTIALS")
+	return models.GetCredentials(user.UserID)
 }
-
-var myuser perfectUser = perfectUser{}
 
 func SettingsTwoFactorCreate(c *context.Context) {
 
@@ -426,8 +427,11 @@ func SettingsTwoFactorCreate(c *context.Context) {
 		return
 	}
 
+
 	// No attestation (identification of used key type) necessary, but we cannot set it in the webauthn.Config, as this value is not considered
-	options, sessionData, _ := authn.BeginRegistration(&myuser, webauthn.WithConveyancePreference(protocol.PreferNoAttestation))
+	options, sessionData, _ := authn.BeginRegistration(&perfectUser { UserID: c.UserID() },
+		webauthn.WithConveyancePreference(protocol.PreferNoAttestation),
+		webauthn.WithExclusions(models.GetCredentialDescriptors(c.UserID())))
 
 	c.Session.Set("webauthn", *sessionData)
 	c.JSONSuccess(options)
@@ -442,13 +446,14 @@ func SettingsTwoFactorCreatePost(c *context.Context) {
 	})
 
 	sessionData := c.Session.Get("webauthn").(webauthn.SessionData)
-	_, err := authn.FinishRegistration(&myuser, sessionData, c.Context.Req.Request)
+	credentials, err := authn.FinishRegistration(&perfectUser { UserID: c.UserID() }, sessionData, c.Context.Req.Request)
 
 	if(err != nil) {
 		c.ServerError("GetTwoFactorByUserID", err)
 		return
 	}
 
+	models.NewWebAuthentication(c.UserID(), *credentials)
 	c.NotFound()
 }
 

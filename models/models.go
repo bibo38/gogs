@@ -58,7 +58,7 @@ var (
 
 func init() {
 	tables = append(tables,
-		new(User), new(PublicKey), new(AccessToken), new(TwoFactor), new(TwoFactorRecoveryCode),
+		new(User), new(PublicKey), new(AccessToken), new(TwoFactor), new(TwoFactorRecoveryCode), new(WebAuthentication),
 		new(Repository), new(DeployKey), new(Collaboration), new(Access), new(Upload),
 		new(Watch), new(Star), new(Follow), new(Action),
 		new(Issue), new(PullRequest), new(Comment), new(Attachment), new(IssueUser),
@@ -379,7 +379,6 @@ func ImportDatabase(dirPath string, verbose bool) (err error) {
 					log.Error(2, "Failed to reset 'created_unix': %v", err)
 				}
 			}
-
 			switch rawTableName {
 			case "milestone":
 				if _, err = x.Exec("UPDATE "+rawTableName+" SET deadline_unix=?, closed_date_unix=? WHERE id=?", meta["DeadlineUnix"], meta["ClosedDateUnix"], meta["ID"]); err != nil {

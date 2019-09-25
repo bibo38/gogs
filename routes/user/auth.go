@@ -18,6 +18,7 @@ import (
 	"github.com/gogs/gogs/pkg/mailer"
 	"github.com/gogs/gogs/pkg/setting"
 	"github.com/gogs/gogs/pkg/tool"
+	"github.com/duo-labs/webauthn/webauthn"
 )
 
 const (
@@ -182,10 +183,11 @@ func LoginPost(c *context.Context, f form.SignIn) {
 		return
 	}
 
-	if !u.IsEnabledTwoFactor() {
+	// TODO Reenable
+	/*if !u.IsEnabledTwoFactor() {
 		afterLogin(c, u, f.Remember)
 		return
-	}
+	} */
 
 	c.Session.Set("twoFactorRemember", f.Remember)
 	c.Session.Set("twoFactorUserID", u.ID)
@@ -301,6 +303,63 @@ func SignUp(c *context.Context) {
 	}
 
 	c.Success(SIGNUP)
+}
+
+func LoginWebAuthentication(c *context.Context) {
+	userID, ok := c.Session.Get("twoFactorUserID").(int64)
+	if !ok {
+		c.NotFound()
+		return
+	}
+
+	authn, err := webauthn.New(&webauthn.Config {
+		RPDisplayName: "Gogs",
+		RPID: "localhost",
+		RPOrigin: "http://localhost",
+	})
+	if err != nil {
+		c.ServerError("GetTwoFactorByUserID", err)
+		return
+	}
+
+	options, session, _ := authn.BeginLogin(&perfectUser { UserID: userID })
+
+	c.Session.Set("webauthnLogin", *session)
+	c.JSONSuccess(options)
+}
+
+func LoginWebAuthenticationPost(c *context.Context) {
+	userID, ok := c.Session.Get("twoFactorUserID").(int64)
+	if !ok {
+		c.NotFound()
+		return
+	}
+
+	session := c.Session.Get("webauthnLogin").(webauthn.SessionData)
+
+	authn, err := webauthn.New(&webauthn.Config {
+		RPDisplayName: "Gogs",
+		RPID: "localhost",
+		RPOrigin: "http://localhost",
+	})
+	if err != nil {
+		c.ServerError("GetTwoFactorByUserID", err)
+		return
+	}
+
+	_, err = authn.FinishLogin(&perfectUser { userID }, session, c.Context.Req.Request)
+
+	if err != nil {
+		c.NotFound()
+		return
+	}
+
+	u, err := models.GetUserByID(userID)
+	if err != nil {
+		c.ServerError("GetUserByID", err)
+		return
+	}
+	afterLogin(c, u, c.Session.Get("twoFactorRemember").(bool))
 }
 
 func SignUpPost(c *context.Context, cpt *captcha.Captcha, f form.Register) {

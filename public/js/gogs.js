@@ -1204,8 +1204,56 @@ function initWebhookSettings() {
     });
 }
 
+function startWebAuthnSignin()
+{
+	// Base64 to ArrayBuffer
+	function decodeBuffer(value) {
+		return Uint8Array.from(atob(value), c => c.charCodeAt(0))
+	}
+
+	// On this side, we need to encode to Base64url for the library
+	function encodeBuffer(value) {
+		var base64 = btoa(new Uint8Array(value).reduce((s, byte) => s + String.fromCharCode(byte), ''))
+		var base64url = base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g,  '')
+		return base64url
+	}
+
+	fetch('web_authentication')
+		.then(resp => resp.json())
+		.then(resp => {
+			resp.publicKey.challenge = decodeBuffer(resp.publicKey.challenge)
+			resp.publicKey.allowCredentials.forEach(cred => cred.id = decodeBuffer(cred.id))
+			return navigator.credentials.get(resp)
+		})
+		.then(cred => {
+			let postCred = {
+				type: cred.type,
+				id: cred.id,
+				rawId: cred.id, // As it should already been base64 url encoded
+				response: {
+					clientDataJSON: encodeBuffer(cred.response.clientDataJSON),
+					authenticatorData: encodeBuffer(cred.response.authenticatorData),
+					signature: encodeBuffer(cred.response.signature),
+					userHandle: encodeBuffer(cred.response.userHandle)
+				}
+			}
+
+			return fetch('web_authentication', {
+				method: 'POST',
+				body: JSON.stringify(postCred),
+				headers: {
+					'X-Csrf-Token': csrf
+				}
+			})
+		})
+		.then(x => document.location.pathname = '/') // TODO There may be annother path...
+}
+
 function initSigninSettings()
 {
+	if($('.user.signin.two-factor').length > 0) {
+		startWebAuthnSignin()
+	}
 }
 
 $(document).ready(function () {

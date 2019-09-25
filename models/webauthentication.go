@@ -36,7 +36,6 @@ func NewWebAuthentication(userID int64, cred webauthn.Credential) error {
 func GetCredentials(userID int64) []webauthn.Credential {
 	auths := make([]WebAuthentication, 0, 5)
 	x.Where("user_id = ?", userID).Find(&auths)
-	fmt.Printf("HELLO")
 	creds := make([]webauthn.Credential, len(auths))
 	for i := range(auths) {
 		creds[i].ID = auths[i].CredID

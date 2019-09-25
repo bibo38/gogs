@@ -205,6 +205,7 @@ func runWeb(c *cli.Context) error {
 				Post(bindIgnErr(form.SignIn{}), user.LoginPost)
 			m.Combo("/two_factor").Get(user.LoginTwoFactor).Post(user.LoginTwoFactorPost)
 			m.Combo("/two_factor_recovery_code").Get(user.LoginTwoFactorRecoveryCode).Post(user.LoginTwoFactorRecoveryCodePost)
+			m.Combo("/web_authentication").Get(user.LoginWebAuthentication).Post(user.LoginWebAuthenticationPost)
 		})
 
 		m.Get("/sign_up", user.SignUp)

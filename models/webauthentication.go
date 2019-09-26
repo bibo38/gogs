@@ -46,6 +46,10 @@ func GetCredentials(userID int64) []webauthn.Credential {
 	return creds
 }
 
+func IsUserEnabledWebAuthentication(userID int64) bool {
+	return len(GetCredentials(userID)) > 0
+}
+
 func GetCredentialDescriptors(userID int64) []protocol.CredentialDescriptor {
 	creds := GetCredentials(userID)
 	descs := make([]protocol.CredentialDescriptor, len(creds))

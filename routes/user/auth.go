@@ -183,11 +183,10 @@ func LoginPost(c *context.Context, f form.SignIn) {
 		return
 	}
 
-	// TODO Reenable
-	/*if !u.IsEnabledTwoFactor() {
+	if !u.IsEnabledTwoFactor() {
 		afterLogin(c, u, f.Remember)
 		return
-	} */
+	}
 
 	c.Session.Set("twoFactorRemember", f.Remember)
 	c.Session.Set("twoFactorUserID", u.ID)

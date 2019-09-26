@@ -246,7 +246,6 @@ func (u *User) GenerateRandomAvatar() error {
 	log.Info("New random avatar created: %d", u.ID)
 	return nil
 }
-
 // RelAvatarLink returns relative avatar link to the site domain,
 // which includes app sub-url as prefix. However, it is possible
 // to return full URL if user enables Gravatar-like service.
@@ -402,7 +401,7 @@ func (u *User) IsPublicMember(orgId int64) bool {
 
 // IsEnabledTwoFactor returns true if user has enabled two-factor authentication.
 func (u *User) IsEnabledTwoFactor() bool {
-	return IsUserEnabledTwoFactor(u.ID)
+	return IsUserEnabledTwoFactor(u.ID) || IsUserEnabledWebAuthentication(u.ID)
 }
 
 func (u *User) getOrganizationCount(e Engine) (int64, error) {

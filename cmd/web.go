@@ -237,6 +237,7 @@ func runWeb(c *cli.Context) error {
 			m.Combo("/two_factor_recovery_codes").Get(user.SettingsTwoFactorRecoveryCodes).
 				Post(user.SettingsTwoFactorRecoveryCodesPost)
 			m.Post("/two_factor_disable", user.SettingsTwoFactorDisable)
+			m.Post("/deleteWebAuthenticationKey", user.SettingsDeleteWebAuthenticationKeyPost)
 		})
 		m.Group("/repositories", func() {
 			m.Get("", user.SettingsRepos)

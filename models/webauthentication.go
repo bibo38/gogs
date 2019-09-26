@@ -33,13 +33,42 @@ func NewWebAuthentication(userID int64, cred webauthn.Credential) error {
 	return sess.Commit()
 }
 
-func GetCredentials(userID int64) []webauthn.Credential {
+func DeleteWebAuthenticationKey(userID int64, keyID int64) error {
+	key := new(WebAuthentication)
+	if _, err := x.Id(keyID).Get(key); err != nil {
+		return err
+	}
+
+	// TODO Maybe check Admin
+	if key.UserID != userID {
+		return fmt.Errorf("Key doesn't belong to that user!")
+	}
+
+	sess := x.NewSession()
+	defer sess.Close()
+	if err := sess.Begin(); err != nil {
+		return err
+	}
+
+	if _, err := sess.Id(keyID).Delete(new(WebAuthentication)); err != nil {
+		return err
+	}
+
+	return sess.Commit()
+}
+
+func GetWebAuthenticationKeys(userID int64) []WebAuthentication {
 	auths := make([]WebAuthentication, 0, 5)
 	x.Where("user_id = ?", userID).Find(&auths)
+	return auths
+}
+
+func GetCredentials(userID int64) []webauthn.Credential {
+	auths := GetWebAuthenticationKeys(userID)
 	creds := make([]webauthn.Credential, len(auths))
-	for i := range(auths) {
-		creds[i].ID = auths[i].CredID
-		creds[i].PublicKey = auths[i].PubKey
+	for i, auth := range(auths) {
+		creds[i].ID = auth.CredID
+		creds[i].PublicKey = auth.PubKey
 		creds[i].AttestationType = "none"
 	}
 
@@ -47,15 +76,15 @@ func GetCredentials(userID int64) []webauthn.Credential {
 }
 
 func IsUserEnabledWebAuthentication(userID int64) bool {
-	return len(GetCredentials(userID)) > 0
+	return len(GetWebAuthenticationKeys(userID)) > 0
 }
 
 func GetCredentialDescriptors(userID int64) []protocol.CredentialDescriptor {
-	creds := GetCredentials(userID)
-	descs := make([]protocol.CredentialDescriptor, len(creds))
-	for i := range(creds) {
+	auths := GetWebAuthenticationKeys(userID)
+	descs := make([]protocol.CredentialDescriptor, len(auths))
+	for i, auth := range(auths) {
 		descs[i].Type = "public-key"
-		descs[i].CredentialID = creds[i].ID
+		descs[i].CredentialID = auth.CredID
 	}
 
 	return descs

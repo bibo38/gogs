@@ -384,9 +384,25 @@ func SettingsSecurity(c *context.Context) {
 		c.ServerError("GetTwoFactorByUserID", err)
 		return
 	}
+
+	auths := models.GetWebAuthenticationKeys(c.UserID())
+
 	c.Data["TwoFactor"] = t
+	c.Data["WebAuthentication"] = auths
 
 	c.Success(SETTINGS_SECURITY)
+}
+
+func SettingsDeleteWebAuthenticationKeyPost(c *context.Context) {
+	if err := models.DeleteWebAuthenticationKey(c.UserID(), c.QueryInt64("id")); err != nil {
+		c.Flash.Error("Could not delete the WebAuthentication key")
+	} else {
+		c.Flash.Success("Deleted the WebAuthentication key")
+	}
+
+	c.JSONSuccess(map[string]interface{} {
+		"redirect": setting.AppSubURL + "/user/settings/security",
+	})
 }
 
 type perfectUser struct {

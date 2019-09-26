@@ -33,6 +33,18 @@
 								Security Token
 							</div>
 						</div>
+						{{range .WebAuthentication}}
+							<div class="ui item grid">
+								<div class="ten wide column">
+									Security Token Nr. {{.ID}}
+								</div>
+								<div class="right floated button">
+									<button class="ui red tiny basic button delete-button" data-url="{{$.Link}}/deleteWebAuthenticationKey" data-id="{{.ID}}">
+										{{$.i18n.Tr "settings.delete_key"}}
+									</button>
+								</div>
+							</div>
+						{{end}}
 						<div class="ui item grid">
 							<div class="ten wide column">
 								Windows Hello/TPM

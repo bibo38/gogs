@@ -321,7 +321,11 @@ func LoginWebAuthentication(c *context.Context) {
 		return
 	}
 
-	options, session, _ := authn.BeginLogin(&perfectUser { UserID: userID })
+	options, session, err := authn.BeginLogin(&perfectUser { UserID: userID })
+	if err != nil {
+		c.NotFound()
+		return
+	}
 
 	c.Session.Set("webauthnLogin", *session)
 	c.JSONSuccess(options)

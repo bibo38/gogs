@@ -20,6 +20,11 @@ import (
 )
 
 // TwoFactor represents a two-factor authentication token.
+// Note that it only stores TOTP tokens. WebAuthentication
+// uses a different table to store it's tokens. This is
+// done for compatibility reasons, to prevent the need of
+// a table change/migration (this is also the reason, that this
+// class is still named TwoFactor)
 type TwoFactor struct {
 	ID          int64
 	UserID      int64 `xorm:"UNIQUE"`
@@ -53,8 +58,8 @@ func (t *TwoFactor) ValidateTOTP(passcode string) (bool, error) {
 	return totp.Validate(passcode, string(decryptSecret)), nil
 }
 
-// IsUserEnabledTwoFactor returns true if user has enabled two-factor authentication.
-func IsUserEnabledTwoFactor(userID int64) bool {
+// IsUserEnabledTOTP returns true if user has enabled two-factor authentication using TOTP.
+func IsUserEnabledTOTP(userID int64) bool {
 	has, err := x.Where("user_id = ?", userID).Get(new(TwoFactor))
 	if err != nil {
 		log.Error(2, "IsUserEnabledTwoFactor [user_id: %d]: %v", userID, err)
@@ -62,8 +67,8 @@ func IsUserEnabledTwoFactor(userID int64) bool {
 	return has
 }
 
-// NewTwoFactor creates a new two-factor authentication token and recovery codes for given user.
-func NewTwoFactor(userID int64, secret string) error {
+// NewTOTPToken creates a new TOTP two-factor authentication token and recovery codes for given user.
+func NewTOTPToken(userID int64, secret string) error {
 	t := &TwoFactor{
 		UserID: userID,
 	}
@@ -95,8 +100,8 @@ func NewTwoFactor(userID int64, secret string) error {
 	return sess.Commit()
 }
 
-// GetTwoFactorByUserID returns two-factor authentication token of given user.
-func GetTwoFactorByUserID(userID int64) (*TwoFactor, error) {
+// GetTOTPByUserID returns the TOTP two-factor authentication token of given user.
+func GetTOTPByUserID(userID int64) (*TwoFactor, error) {
 	t := new(TwoFactor)
 	has, err := x.Where("user_id = ?", userID).Get(t)
 	if err != nil {
@@ -108,8 +113,8 @@ func GetTwoFactorByUserID(userID int64) (*TwoFactor, error) {
 	return t, nil
 }
 
-// DeleteTwoFactor removes two-factor authentication token and recovery codes of given user.
-func DeleteTwoFactor(userID int64) (err error) {
+// DeleteTOTPToken removes the TOTP two-factor authentication token and recovery codes of given user.
+func DeleteTOTPToken(userID int64) (err error) {
 	sess := x.NewSession()
 	defer sess.Close()
 	if err = sess.Begin(); err != nil {

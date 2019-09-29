@@ -379,9 +379,9 @@ func SettingsSecurity(c *context.Context) {
 	c.Title("settings.security")
 	c.PageIs("SettingsSecurity")
 
-	t, err := models.GetTwoFactorByUserID(c.UserID())
+	t, err := models.GetTOTPByUserID(c.UserID())
 	if err != nil && !errors.IsTwoFactorNotFound(err) {
-		c.ServerError("GetTwoFactorByUserID", err)
+		c.ServerError("GetTOTPByUserID", err)
 		return
 	}
 
@@ -531,7 +531,7 @@ func SettingsTwoFactorEnablePost(c *context.Context) {
 		return
 	}
 
-	if err := models.NewTwoFactor(c.UserID(), secret); err != nil {
+	if err := models.NewTOTPToken(c.UserID(), secret); err != nil {
 		c.Flash.Error(c.Tr("settings.two_factor_enable_error", err))
 		c.SubURLRedirect("/user/settings/security/two_factor_enable")
 		return
@@ -583,8 +583,8 @@ func SettingsTwoFactorDisable(c *context.Context) {
 		return
 	}
 
-	if err := models.DeleteTwoFactor(c.UserID()); err != nil {
-		c.ServerError("DeleteTwoFactor", err)
+	if err := models.DeleteTOTPToken(c.UserID()); err != nil {
+		c.ServerError("DeleteTOTPToken", err)
 		return
 	}
 

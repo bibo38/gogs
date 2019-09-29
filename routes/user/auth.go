@@ -210,9 +210,9 @@ func LoginTwoFactorPost(c *context.Context) {
 		return
 	}
 
-	t, err := models.GetTwoFactorByUserID(userID)
+	t, err := models.GetTOTPByUserID(userID)
 	if err != nil {
-		c.ServerError("GetTwoFactorByUserID", err)
+		c.ServerError("GetTOTPByUserID", err)
 		return
 	}
 

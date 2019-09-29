@@ -42,6 +42,8 @@ func GetRecoveryCodesByUserID(userID int64) ([]*TwoFactorRecoveryCode, error) {
 	return recoveryCodes, x.Where("user_id = ?", userID).Find(&recoveryCodes)
 }
 
+// TODO Rename and change it, so that TOTP and WebAuthentication can both call
+// this function and it will only delete the codes, if both are disabled
 func deleteRecoveryCodesByUserID(e Engine, userID int64) error {
 	_, err := e.Where("user_id = ?", userID).Delete(new(TwoFactorRecoveryCode))
 	return err

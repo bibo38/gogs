@@ -16,7 +16,7 @@
 								{{.i18n.Tr "settings.two_factor_status"}}
 								{{if .TwoFactor}}
 									<span class="text green">{{.i18n.Tr "settings.two_factor_on"}} <i class="octicon octicon-check"></i></span>
-									<button class="ui right mini red toggle button delete-button" data-url="{{$.Link}}/two_factor_disable">{{.i18n.Tr "settings.two_factor_disable"}}</button>
+									<button class="ui right mini red toggle button delete-button" data-url="{{$.Link}}/totp_disable">{{.i18n.Tr "settings.two_factor_disable"}}</button>
 								{{else}}
 									<span class="text red">{{.i18n.Tr "settings.two_factor_off"}} <i class="octicon octicon-x"></i></span>
 
@@ -39,7 +39,7 @@
 									Security Token Nr. {{.ID}}
 								</div>
 								<div class="right floated button">
-									<button class="ui red tiny basic button delete-button" data-url="{{$.Link}}/deleteWebAuthenticationKey" data-id="{{.ID}}">
+									<button class="ui red tiny basic button delete-button" data-url="{{$.Link}}/webauthentication_disable" data-id="{{.ID}}">
 										{{$.i18n.Tr "settings.delete_key"}}
 									</button>
 								</div>

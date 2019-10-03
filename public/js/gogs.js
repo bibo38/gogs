@@ -1102,7 +1102,7 @@ function registerWebAuthn() {
 	}
 
     // TODO Check if WebAuthn is availabl
-	fetch('security/two_factor_create')
+	fetch('security/webauthentication_enable')
 		.then(resp => resp.json())
 		.then(resp => {
 			// Decode the necessary JSON fields to ArrayBuffers
@@ -1124,7 +1124,7 @@ function registerWebAuthn() {
 				}
 			}
 
-			return fetch('security/two_factor_create', {
+			return fetch('security/webauthentication_enable', {
 				method: 'POST',
 				body: JSON.stringify(postCreds),
 				headers: {

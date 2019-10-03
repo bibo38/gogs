@@ -37,7 +37,7 @@ const (
 	SETTINGS_SSH_KEYS                  = "user/settings/sshkeys"
 	SETTINGS_SECURITY                  = "user/settings/security"
 	SETTINGS_TWO_FACTOR_CREATE         = "user/settings/two_factor_create"
-	SETTINGS_TWO_FACTOR_ENABLE         = "user/settings/two_factor_enable"
+	SETTINGS_TOTP_ENABLE               = "user/settings/totp_enable"
 	SETTINGS_TWO_FACTOR_RECOVERY_CODES = "user/settings/two_factor_recovery_codes"
 	SETTINGS_REPOSITORIES              = "user/settings/repositories"
 	SETTINGS_ORGANIZATIONS             = "user/settings/organizations"
@@ -393,7 +393,7 @@ func SettingsSecurity(c *context.Context) {
 	c.Success(SETTINGS_SECURITY)
 }
 
-func SettingsDeleteWebAuthenticationKeyPost(c *context.Context) {
+func SettingsWebAuthenticationDisable(c *context.Context) {
 	if err := models.DeleteWebAuthenticationKey(c.UserID(), c.QueryInt64("id")); err != nil {
 		c.Flash.Error("Could not delete the WebAuthentication key")
 	} else {
@@ -430,7 +430,7 @@ func (user *perfectUser) WebAuthnCredentials() []webauthn.Credential {
 	return models.GetCredentials(user.UserID)
 }
 
-func SettingsTwoFactorCreate(c *context.Context) {
+func SettingsWebAuthenticationEnable(c *context.Context) {
 
 	// TODO Testing route
 	authn, err := webauthn.New(&webauthn.Config {
@@ -454,7 +454,7 @@ func SettingsTwoFactorCreate(c *context.Context) {
 	// c.Success(SETTINGS_TWO_FACTOR_CREATE)
 }
 
-func SettingsTwoFactorCreatePost(c *context.Context) {
+func SettingsWebAuthenticationEnablePost(c *context.Context) {
 	authn, _ := webauthn.New(&webauthn.Config {
 		RPDisplayName: "Gogs",
 		RPID: "localhost",
@@ -473,7 +473,7 @@ func SettingsTwoFactorCreatePost(c *context.Context) {
 	c.NotFound()
 }
 
-func SettingsTwoFactorEnable(c *context.Context) {
+func SettingsTOTPEnable(c *context.Context) {
 	if c.User.IsEnabledTwoFactor() {
 		c.NotFound()
 		return
@@ -515,10 +515,10 @@ func SettingsTwoFactorEnable(c *context.Context) {
 
 	c.Session.Set("twoFactorSecret", c.Data["TwoFactorSecret"])
 	c.Session.Set("twoFactorURL", key.String())
-	c.Success(SETTINGS_TWO_FACTOR_ENABLE)
+	c.Success(SETTINGS_TOTP_ENABLE)
 }
 
-func SettingsTwoFactorEnablePost(c *context.Context) {
+func SettingsTOTPEnablePost(c *context.Context) {
 	secret, ok := c.Session.Get("twoFactorSecret").(string)
 	if !ok {
 		c.NotFound()
@@ -527,13 +527,13 @@ func SettingsTwoFactorEnablePost(c *context.Context) {
 
 	if !totp.Validate(c.Query("passcode"), secret) {
 		c.Flash.Error(c.Tr("settings.two_factor_invalid_passcode"))
-		c.SubURLRedirect("/user/settings/security/two_factor_enable")
+		c.SubURLRedirect("/user/settings/security/totp_enable")
 		return
 	}
 
 	if err := models.NewTOTPToken(c.UserID(), secret); err != nil {
 		c.Flash.Error(c.Tr("settings.two_factor_enable_error", err))
-		c.SubURLRedirect("/user/settings/security/two_factor_enable")
+		c.SubURLRedirect("/user/settings/security/totp_enable")
 		return
 	}
 
@@ -577,7 +577,7 @@ func SettingsTwoFactorRecoveryCodesPost(c *context.Context) {
 	c.SubURLRedirect("/user/settings/security/two_factor_recovery_codes")
 }
 
-func SettingsTwoFactorDisable(c *context.Context) {
+func SettingsTOTPDisable(c *context.Context) {
 	if !c.User.IsEnabledTwoFactor() {
 		c.NotFound()
 		return

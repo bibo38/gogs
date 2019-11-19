@@ -230,6 +230,7 @@ func runWeb(c *cli.Context) error {
 		m.Post("/ssh/delete", user.DeleteSSHKey)
 		m.Group("/security", func() {
 			m.Get("", user.SettingsSecurity)
+			m.Get("/two_factor_create", user.SettingsTwoFactorCreate)
 			m.Combo("/webauthentication_enable").Get(user.SettingsWebAuthenticationEnable).
 				Post(user.SettingsWebAuthenticationEnablePost)
 			m.Combo("/totp_enable").Get(user.SettingsTOTPEnable).

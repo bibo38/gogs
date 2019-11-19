@@ -7,59 +7,68 @@
 				{{template "base/alert" .}}
 				<h4 class="ui top attached header">
 					{{.i18n.Tr "settings.two_factor"}}
-					<a class="ui right mini green toggle button" href="{{AppSubURL}}/user/settings/security/two_factor_create">{{.i18n.Tr "settings.two_factor_enable"}}</a>
+					<a class="ui right mini green toggle button" href="{{AppSubURL}}/user/settings/security/two_factor_create">Add second factor</a>
 				</h4>
 				<div class="ui attached segment two-factor">
 					<div class="ui key list">
-						<div class="ui item grid">
+						<div class="ui item">
 							<p class="text bold">
 								{{.i18n.Tr "settings.two_factor_status"}}
-								{{if .TwoFactor}}
+								{{if or .TwoFactor .WebAuthentication}}
 									<span class="text green">{{.i18n.Tr "settings.two_factor_on"}} <i class="octicon octicon-check"></i></span>
-									<button class="ui right mini red toggle button delete-button" data-url="{{$.Link}}/totp_disable">{{.i18n.Tr "settings.two_factor_disable"}}</button>
 								{{else}}
 									<span class="text red">{{.i18n.Tr "settings.two_factor_off"}} <i class="octicon octicon-x"></i></span>
-
 								{{end}}
 							</p>
-							<p class="text bold">
-								Web Authentication:
-								<span class="text red">Off  <i class="octicon octicon-x"></i></span>
-								<a class="ui right mini green toggle button" id="registerWebAuthn">Enable</a>
-							</p>
 						</div>
-						<div class="ui item grid">
-							<div class="ten wide column">
-								Security Token
-							</div>
-						</div>
-						{{range .WebAuthentication}}
+						{{if .TwoFactor}}
 							<div class="ui item grid">
-								<div class="ten wide column">
-									Security Token Nr. {{.ID}}
+								<div class="one wide column">
+									<i class="mega-octicon octicon-key left"></i>
 								</div>
-								<div class="right floated button">
-									<button class="ui red tiny basic button delete-button" data-url="{{$.Link}}/webauthentication_disable" data-id="{{.ID}}">
-										{{$.i18n.Tr "settings.delete_key"}}
-									</button>
+								<div class="ten wide column">
+									<strong>TOTP</strong>
+								</div>
+								<div class="right floated four wide column">
+									<div class="right floated button">
+										<button class="ui tiny red basic button delete-button" data-url="{{$.Link}}/totp_disable">
+											{{.i18n.Tr "settings.delete_key"}}
+										</button>
+									</div>
 								</div>
 							</div>
 						{{end}}
-						<div class="ui item grid">
-							<div class="ten wide column">
-								Windows Hello/TPM
+						{{range .WebAuthentication}}
+							<div class="ui item grid">
+								<div class="one wide column">
+									<i class="fa fa-usb fa-rotate270 fa-2x left"></i>
+								</div>
+								<div class="ten wide column">
+									<strong>Security Token Nr. {{.ID}}</strong>
+								</div>
+								<div class="right floated four wide column">
+									<div class="right floated button">
+										<button class="ui red tiny basic button delete-button" data-url="{{$.Link}}/webauthentication_disable" data-id="{{.ID}}">
+											{{$.i18n.Tr "settings.delete_key"}}
+										</button>
+									</div>
+								</div>
 							</div>
-						</div>
-						<div class="ui item grid">
-							<div class="ten wide column">
-								<a href="{{AppSubURL}}/user/settings/security/two_factor_recovery_codes">Recovery Codes</a>
+						{{end}}
+						{{if or .TwoFactor .WebAuthentication}}
+							<div class="ui item grid">
+								<div class="one wide column">
+									<i class="mega-octicon octicon-flame left"></i>
+								</div>
+								<div class="ten wide column">
+									<strong><a href="{{AppSubURL}}/user/settings/security/two_factor_recovery_codes">Recovery Codes</a></strong>
+								</div>
 							</div>
-						</div>
+						{{end}}
 					</div>
 				</div>
-				{{if .TwoFactor}}
+				{{if or .TwoFactor .WebAuthentication}}
 					<br>
-					<p>{{.i18n.Tr "settings.two_factor_view_recovery_codes" AppSubURL "/user/settings/security/two_factor_recovery_codes" | Safe}}</p>
 					<p>{{.i18n.Tr "settings.two_factor_http" AppSubURL "/user/settings/applications" "https://{token}@try.gogs.io/user/repo.git" | Safe}}</p>
 				{{end}}
 			</div>

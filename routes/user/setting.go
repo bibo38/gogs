@@ -393,6 +393,11 @@ func SettingsSecurity(c *context.Context) {
 	c.Success(SETTINGS_SECURITY)
 }
 
+func SettingsTwoFactorCreate(c *context.Context) {
+
+	c.Success(SETTINGS_TWO_FACTOR_CREATE)
+}
+
 func SettingsWebAuthenticationDisable(c *context.Context) {
 	if err := models.DeleteWebAuthenticationKey(c.UserID(), c.QueryInt64("id")); err != nil {
 		c.Flash.Error("Could not delete the WebAuthentication key")
@@ -451,7 +456,6 @@ func SettingsWebAuthenticationEnable(c *context.Context) {
 
 	c.Session.Set("webauthn", *sessionData)
 	c.JSONSuccess(options)
-	// c.Success(SETTINGS_TWO_FACTOR_CREATE)
 }
 
 func SettingsWebAuthenticationEnablePost(c *context.Context) {

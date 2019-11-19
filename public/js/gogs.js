@@ -1102,7 +1102,7 @@ function registerWebAuthn() {
 	}
 
     // TODO Check if WebAuthn is availabl
-	fetch('security/webauthentication_enable')
+	fetch('webauthentication_enable')
 		.then(resp => resp.json())
 		.then(resp => {
 			// Decode the necessary JSON fields to ArrayBuffers
@@ -1124,7 +1124,7 @@ function registerWebAuthn() {
 				}
 			}
 
-			return fetch('security/webauthentication_enable', {
+			return fetch('webauthentication_enable', {
 				method: 'POST',
 				body: JSON.stringify(postCreds),
 				headers: {
@@ -1150,7 +1150,7 @@ function initUserSettings() {
     }
 
     // Two Factor authentication
-    if ($('.user.settings.security').length > 0) {
+    if ($('.user.settings.security.two-factor').length > 0) {
         $('#registerWebAuthn').click(registerWebAuthn);
     }
 }

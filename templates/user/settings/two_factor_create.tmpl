@@ -9,22 +9,44 @@
 					Add a second factor
 				</h4>
 				<div class="ui attached segment">
-					<div class="ui list">
-						<div class="item">
-							Display Name: <input type="text" />
-						</div>
-						<div class="item">
-							<a href="{{AppSubURL}}/user/settings/security/two_factor_enable">TTOP / Google Authenticator</a>
-						</div>
-						<div class="item">
-							<a id="registerWebAuthn">Security Key</a>
-						</div>
-						<div class="item">
-							<a>Windows Hello / TPM</a>
-						</div>
-						<div class="item">
-							<button name="Create" />
-						</div>
+					<div class="ui labeled input">
+						<div class="ui label">Display Name</div>
+						<input type="text" />
+					</div>
+					<div class="ui three fluid vertical menu">
+						<a class="item" href="{{AppSubURL}}/user/settings/security/totp_enable">
+							<div class="item ui grid">
+								<div class="one wide column">
+									<i class="mega-octicon octicon-key left"></i>
+								</div>
+								<div class="ten wide column">
+									<strong>TTOP / Google Authenticator</strong>
+									<div class="print meta">A 6 digit one time password</div>
+								</div>
+							</div>
+						</a>
+						<a class="item" id="registerWebAuthn">
+							<div class="item ui grid">
+								<div class="one wide column">
+									<i class="fa fa-usb fa-rotate270 fa-2x left"></i>
+								</div>
+								<div class="ten wide column">
+									<strong>Security Key</strong>
+									<div class="print meta">A compatible FIDO2 CTAP or U2F security key</div>
+								</div>
+							</div>
+						</a>
+						<a class="item">
+							<div class="item ui grid">
+								<div class="one wide column">
+									<i class="fa fa-windows fa-2x left"></i>
+								</div>
+								<div class="ten wide column">
+									<strong>Windows Hello / TPM</strong>
+									<div>Windows Hello and TPM 2.0 authentication</div>
+								</div>
+							</div>
+						</a>
 					</div>
 				</div>
 			</div>

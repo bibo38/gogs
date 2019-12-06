@@ -478,7 +478,7 @@ func SettingsWebAuthenticationEnablePost(c *context.Context) {
 }
 
 func SettingsTOTPEnable(c *context.Context) {
-	if c.User.IsEnabledTwoFactor() {
+	if models.IsUserEnabledTOTP(c.User.ID) {
 		c.NotFound()
 		return
 	}
@@ -582,7 +582,7 @@ func SettingsTwoFactorRecoveryCodesPost(c *context.Context) {
 }
 
 func SettingsTOTPDisable(c *context.Context) {
-	if !c.User.IsEnabledTwoFactor() {
+	if !models.IsUserEnabledTOTP(c.User.ID) {
 		c.NotFound()
 		return
 	}
